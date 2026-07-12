@@ -10,13 +10,13 @@ import sys
 load_dotenv()
 
 client = OpenAI(
-    api_key=os.getenv("MINIMAX_API_KEY"),  
-    base_url="https://api.minimaxi.com/v1"
+    api_key=os.getenv("KIMI_API_KEY"),
+    base_url="https://api.kimi.com/coding/v1"
 )
 
 def send_messages(messages):
     response = client.chat.completions.create(
-        model="MiniMax-M2.7",
+        model="kimi-for-coding",
         messages=messages,
         tools=TOOLS,
         tool_choice="auto",
@@ -129,5 +129,5 @@ if __name__ == "__main__":
         response_content = history[-1]["content"]
         print(response_content)
         print()
-    
+    #请读取zhao_yi_chuang_xin_daily_k_20250712_20260712.csv中的数据，之后计算移动平均线，并画出这些线
             
