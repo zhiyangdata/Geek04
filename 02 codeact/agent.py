@@ -20,6 +20,7 @@ def send_messages(messages):
         messages=messages,
         tools=TOOLS,
         tool_choice="auto",
+        # 以下 extra_body 为 MiniMax/Kimi 等厂商的自定义参数，切换模型时可能需要调整或移除
         extra_body={"reasoning_split": True},
     )
     return response
@@ -71,8 +72,19 @@ def agent_loop(messages):
 
         response = send_messages(messages)
 
-        if response.choices[0].message.reasoning_details[0]['text'] != "":
-            framed_print(f"Thinking", response.choices[0].message.reasoning_details[0]['text'], "info")
+        # 兼容不同厂商返回的 reasoning 字段：
+        # - MiniMax 使用 reasoning_details（列表，元素含 text 字段）
+        # - Kimi / DeepSeek 使用 reasoning_content（字符串）
+        message = response.choices[0].message
+        reasoning_text = ""
+        if hasattr(message, "reasoning_details") and message.reasoning_details:
+            first = message.reasoning_details[0]
+            reasoning_text = first.get("text") if isinstance(first, dict) else getattr(first, "text", "")
+        elif hasattr(message, "reasoning_content"):
+            reasoning_text = message.reasoning_content or ""
+
+        if reasoning_text:
+            framed_print("Thinking", reasoning_text, "info")
 
         if response.choices[0].message.content != "":
             framed_print(f"Answer", response.choices[0].message.content, "info")
