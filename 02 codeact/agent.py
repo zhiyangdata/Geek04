@@ -70,7 +70,8 @@ def agent_loop(messages):
             sys.exit(0)
 
         response = send_messages(messages)
-
+        # 注意：以下基于 MiniMax API 的 reasoning_details 字段。若使用 Kimi 等其他模型，
+        # reasoning 字段名和结构可能不同（例如 Kimi 使用字符串类型的 reasoning_content）。
         if response.choices[0].message.reasoning_details[0]['text'] != "":
             framed_print(f"Thinking", response.choices[0].message.reasoning_details[0]['text'], "info")
 
